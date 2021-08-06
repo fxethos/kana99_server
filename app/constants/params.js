@@ -1,0 +1,11 @@
+module.exports={
+    port:3000,
+    RDS_DB_HOST_URL:"",
+    RDS_DB_USER:"",
+    RDS_DB_PASSWORD:"",
+    RDS_DB_NAME:"",
+    api_base_url:"https://api.sports.roanuz.com",
+    version:"v5",
+    key:"RS_P_1419704261910073416",
+    api_key:"RS5:7ca04571e349f24371cc6692c80c64ac"
+}
