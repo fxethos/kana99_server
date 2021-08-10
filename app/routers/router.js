@@ -4,6 +4,7 @@ const api_ctrl = require('../controller/api_user_ctrl');
 const bodyParser = require('body-parser');
 const common_util_controller = require('../controller/common_ctrl');
 const ResponseConstants = require('../constants/response_constants.js');
+const user_ctrl=require("../controller/user_ctrl")
 
 
 // module.exports = (app) => {
@@ -60,6 +61,14 @@ apiRoutes.post('/fantasy_match_credits', function (req, res) {
     console.log('received fantasy_match_credits ' + req.body);
     const passwordObj = req.body;
     api_ctrl.fantasy_match_credits(res, passwordObj);
+});
+
+apiRoutes.post('/user/signup', function (req, res) {
+    console.log('received signup ' + req.body);
+    var receivedData = req.body;
+    receivedData.points_accumulated=0
+    receivedData.games_played=0
+    user_ctrl.signup(res, receivedData);
 });
 
 module.exports=apiRoutes

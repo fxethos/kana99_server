@@ -1,9 +1,9 @@
 module.exports={
     port:3000,
-    RDS_DB_HOST_URL:"",
-    RDS_DB_USER:"",
-    RDS_DB_PASSWORD:"",
-    RDS_DB_NAME:"",
+    RDS_DB_HOST_URL:"35.154.51.112",
+    RDS_DB_USER:"postgres",
+    RDS_DB_PASSWORD:"root",
+    RDS_DB_NAME:"kana99",
     api_base_url:"https://api.sports.roanuz.com",
     version:"v5",
     key:"RS_P_1419704261910073416",
