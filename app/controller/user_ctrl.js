@@ -1,15 +1,15 @@
 const knex_config=require("knex")
 
 
-const signup = async function (res, receivedData) {
+const signup = async function (res, received) {
     try {
         knexConfig.knex('users').insert({
-            uuid: received.clientLogin,
-            username: received.symbol,
-            wallet_address: received.volume,
-            points_accumulated:rec_direction,
-            games_played: received.stopLoss,
-            open_price: received.pricePosition,
+            uuid: received.uuid,
+            username: received.username,
+            email:received.email,
+            wallet_address: received.wallet_address,
+            points_accumulated:received.points_accumulated,
+            games_played: received.games_played,
             timestamp:new Date().getTime()
         }).then((user) => {
             return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, 'user  sign up successfull ', user);
