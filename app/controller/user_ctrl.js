@@ -1,9 +1,11 @@
-const knex_config=require("knex")
+const knex_config=require("../config/knex_config")
+const common_util_ctrl=require("../controller/common_ctrl")
+const ResponseConstants=require("../constants/response_constants")
 
 
 const signup = async function (res, received) {
     try {
-        knexConfig.knex('users').insert({
+        knex_config.knex('users').insert({
             uuid: received.uuid,
             username: received.username,
             email:received.email,
@@ -14,7 +16,7 @@ const signup = async function (res, received) {
         }).then((user) => {
             return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, 'user  sign up successfull ', user);
         }).catch((err) => {
-            return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Something went wrong ', user);
+            return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Something went wrong ', err);
         })
     } catch (e) {
         console.log(e);
