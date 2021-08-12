@@ -1,9 +1,8 @@
 var express = require('express');
 var apiRoutes = express.Router();
 const api_ctrl = require('../controller/api_user_ctrl');
-const bodyParser = require('body-parser');
-const common_util_controller = require('../controller/common_ctrl');
-const ResponseConstants = require('../constants/response_constants.js');
+const common_util_ctrl=require("../controller/common_ctrl")
+const ResponseConstants=require("../constants/response_constants")
 const user_ctrl=require("../controller/user_ctrl")
 
 
@@ -66,9 +65,13 @@ apiRoutes.post('/fantasy_match_credits', function (req, res) {
 apiRoutes.post('/user/signup', function (req, res) {
     console.log('received signup ' + req.body);
     var receivedData = req.body;
-    receivedData.points_accumulated=0
-    receivedData.games_played=0
-    user_ctrl.signup(res, receivedData);
+    if((receivedData.uuid && receivedData.email && receivedData.username)){
+        receivedData.points_accumulated=0
+        receivedData.games_played=0
+        user_ctrl.signup(res, receivedData);
+    }else{
+        return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Missing Mandatory params', "ERROR");
+    }
 });
 
 module.exports=apiRoutes
