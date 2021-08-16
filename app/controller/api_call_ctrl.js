@@ -23,8 +23,8 @@ const association_list = async (rs_token) => {
 const association_cboard = async (rs_token) => {
     params={
         type:"cricket",
-        eventName:"association/c__board__bcci__b13f0/featured-tournaments",
-        rs_token:rs_token
+        eventName:`association/${rs_token.page_key}/featured-tournaments`,
+        rs_token:rs_token.rs_token
     }
     return common_util_ctrl.makeGEtRequest(params);
 }
@@ -32,16 +32,16 @@ const association_cboard = async (rs_token) => {
 const tournament_fixtures = async (rs_token) => {
     params={
         type:"cricket",
-        eventName:"tournament/tnplt20_2021/fixtures",
-        rs_token:rs_token
+        eventName:`tournament/${rs_token.page_key}/fixtures`,
+        rs_token:rs_token.rs_token
     }
     return common_util_ctrl.makeGEtRequest(params);
 }
 const fantasy_match_credits = async (rs_token) => {
     params={
         type:"cricket",
-        eventName:"fantasy-match-credits/tnplt20_2021_g1",
-        rs_token:rs_token
+        eventName:`fantasy-match-credits/${rs_token}`,
+        rs_token:rs_token.rs_token
     }
     return common_util_ctrl.makeGEtRequest(params);
 }

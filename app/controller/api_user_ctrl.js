@@ -52,7 +52,7 @@ const association_list = async function (res, receivedData) {
 const association_cboard = async function (res, receivedData) {
     try {
         if (receivedData && receivedData.rs_token) {
-            const api_call_response = await api_call_ctrl.association_cboard(receivedData.rs_token);
+            const api_call_response = await api_call_ctrl.association_cboard(receivedData);
             console.log("api Http status: " + api_call_response.http_status_code);
             const api_response = await api_call_response.json();
             console.log(api_response)
@@ -73,7 +73,7 @@ const association_cboard = async function (res, receivedData) {
 const tournament_fixtures = async function (res, receivedData) {
     try {
         if (receivedData && receivedData.rs_token) {
-            const api_call_response = await api_call_ctrl.tournament_fixtures(receivedData.rs_token);
+            const api_call_response = await api_call_ctrl.tournament_fixtures(receivedData);
             console.log("api Http status: " + api_call_response.http_status_code);
             const api_response = await api_call_response.json();
             console.log(api_response)
@@ -94,7 +94,7 @@ const tournament_fixtures = async function (res, receivedData) {
 const fantasy_match_credits = async function (res, receivedData) {
     try {
         if (receivedData && receivedData.rs_token) {
-            const api_call_response = await api_call_ctrl.fantasy_match_credits(receivedData.rs_token);
+            const api_call_response = await api_call_ctrl.fantasy_match_credits(receivedData);
             console.log("api Http status: " + api_call_response.http_status_code);
             const api_response = await api_call_response.json();
             console.log(api_response)
