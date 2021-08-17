@@ -40,7 +40,7 @@ const tournament_fixtures = async (rs_token) => {
 const fantasy_match_credits = async (rs_token) => {
     params={
         type:"cricket",
-        eventName:`fantasy-match-credits/${rs_token}`,
+        eventName:`fantasy-match-credits/${rs_token.page_key}`,
         rs_token:rs_token.rs_token
     }
     return common_util_ctrl.makeGEtRequest(params);
