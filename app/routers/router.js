@@ -74,4 +74,14 @@ apiRoutes.post('/user/signup', function (req, res) {
     }
 });
 
+apiRoutes.post('/user/info', function (req, res) {
+    console.log('received info ' + req.body);
+    var receivedData = req.body;
+    if((receivedData.uuid)){
+        user_ctrl.getuserinfo(res, receivedData);
+    }else{
+        return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Missing Mandatory params', "ERROR");
+    }
+});
+
 module.exports=apiRoutes
