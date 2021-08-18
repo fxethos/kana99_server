@@ -1,5 +1,11 @@
 const common_util_ctrl=require('../controller/common_ctrl')
 const getparams=require('../constants/params')
+const moment=require('moment')
+
+var authdata=require('../model/authdata')
+var associationlistmodel=require('../model/associationlistdata')
+
+var rs_token=''
 
 const api_auth = async (api_key) => {
     params={
@@ -46,8 +52,60 @@ const fantasy_match_credits = async (rs_token) => {
     return common_util_ctrl.makeGEtRequest(params);
 }
 
+
+const callstaticdata=async ()=>{
+    params={
+        type:"core",
+        eventName:"auth",
+        api_key:getparams.api_key
+    }
+    
+    var findauthdata=await authdata.findOne({})
+    if(!findauthdata){
+        data=await common_util_ctrl.makePostRequest(params);
+        var api_response = await data.json();
+        rs_token=api_response.data.token
+        var savedata=new authdata({
+            rs_token:rs_token,
+            timestamp:api_response.data.expires
+        })
+        savedata.save()
+    }else{
+        console.log(findauthdata)
+        if(moment.unix(findauthdata.timestamp).toDate()<moment().toDate()){
+            data=await common_util_ctrl.makePostRequest(params);
+            var api_response = await data.json();
+            rs_token=api_response.data.token
+            var savedata=new authdata({
+                rs_token:rs_token,
+                timestamp:api_response.data.expires
+            })
+            authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:savedata})
+        }else{
+            rs_token=findauthdata.rs_token
+        }
+    }
+    console.log(rs_token)
+    findassociationlistdata=await associationlistmodel.findOne()
+    console.log(findassociationlistdata)
+    if(!findassociationlistdata){
+        var associationlistdata=await association_list(rs_token)
+        associationlistdata = await associationlistdata.json();
+        res=[]
+        res.push(associationlistdata.data)
+        console.log(res)
+        savedata=new associationlistmodel({
+            data:res,
+            timestamp:new Date().getTime()
+        })
+        await savedata.save()
+    }
+    
+}
+
 module.exports.fantasy_match_credits=fantasy_match_credits
 module.exports.tournament_fixtures=tournament_fixtures
 module.exports.association_cboard=association_cboard
 module.exports.association_list=association_list
 module.exports.api_auth=api_auth
+module.exports.callstaticdata=callstaticdata

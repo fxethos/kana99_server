@@ -1,2 +1,10 @@
 node_modules/
 # package-lock.json
+
+
+*.sw[po]
+/.cargo
+/dist
+.env
+src/client/util/store
+test-ledger/

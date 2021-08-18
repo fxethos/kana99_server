@@ -32,6 +32,7 @@ const main = require( "../sc_controller/client/main")
 //       });
   
 //   }
+const model_ctrl=require('../controller/model_ctrl')
 
 apiRoutes.post('/auth', function (req, res) {
     console.log('auth ' + req.body);
@@ -87,6 +88,9 @@ apiRoutes.post('/user/info', function (req, res) {
 
 apiRoutes.post('/makepayout', main.main)
 
+apiRoutes.get('/getstaticdata', function (req, res) {
+    model_ctrl.getstaticdata(res);
+});
 
 
 module.exports=apiRoutes

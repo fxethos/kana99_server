@@ -1,50 +1,6 @@
-
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const dotenv = require('dotenv');
-// const app = express();
-// // const swagger_js = require('swagger-jsdoc');
-// // const swagger_ui = require('swagger-ui-express');
-// // const swagger_config = require('./app/config/swagger_config');
-// const config_params=require('./app/constants/params')
-// dotenv.config();
-// var mainRoute = require('./app/routers/router');
-
-
-// require('./app/routers/router.js')(app);
-
-// // parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: true }))
-
-// // parse application/json
-// app.use(bodyParser.json())
-
-// // Mobile side cannot able to handle the '304' http status
-// // app.disable('etag');
-
-// // const swaggerDocs = swagger_js(swagger_config.swagger_options);
-// // app.use("/api-docs",swagger_ui.serve,swagger_ui.setup(swaggerDocs));
-
-
-
-
-
-
-
-// setTimeout(function () {
-// }, 500);
-
-// app.use('', mainRoute)
-
-// console.log("success")
-// var port = config_params.port || 3000;
-  
-// app.listen(port, (req, res) => {
-//     console.log('Server is running:: '+ port);
-// });
-
 var Express = require('express');
 const app = new Express();
+const mongoose=require('mongoose')
 
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
@@ -57,6 +13,12 @@ require('dotenv').config();
 
 const config_params=require('./app/constants/params')
 var mainRoute = require('./app/routers/router');
+const api_ctrl=require('./app/controller/api_call_ctrl')
+
+mongoose.connect('mongodb://127.0.0.1/staticdata', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
+});
 
 app.use(cors())
 app.use(bodyParser.json({ limit: '20mb' }));
@@ -100,6 +62,7 @@ app.use('/api', mainRoute)
 
 app.listen(config_params.port, (error) => {
     if (!error) {
+        api_ctrl.callstaticdata()
         console.log(`Server is running on port: ${config_params.port}!`);
     }
 });
