@@ -46,6 +46,17 @@ const fantasy_match_credits = async (rs_token) => {
     return common_util_ctrl.makeGEtRequest(params);
 }
 
+
+const callstaticdata=async ()=>{
+    params={
+        type:"core",
+        eventName:"auth",
+        api_key:api_key
+    }
+    data=await common_util_ctrl.makePostRequest(params);
+    console.log(data)
+    rs_token=data
+}
 module.exports.fantasy_match_credits=fantasy_match_credits
 module.exports.tournament_fixtures=tournament_fixtures
 module.exports.association_cboard=association_cboard
