@@ -76,10 +76,10 @@ const callstaticdata=async ()=>{
             data=await common_util_ctrl.makePostRequest(params);
             var api_response = await data.json();
             rs_token=api_response.data.token
-            var savedata=new authdata({
+            var savedata={
                 rs_token:rs_token,
                 timestamp:api_response.data.expires
-            })
+            }
             authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:savedata})
         }else{
             rs_token=findauthdata.rs_token
@@ -102,6 +102,23 @@ const callstaticdata=async ()=>{
     }
     
 }
+const callingcronjob=async()=>{
+    params={
+        type:"core",
+        eventName:"auth",
+        api_key:getparams.api_key
+    }
+    var findauthdata=await authdata.findOne({})
+    data=await common_util_ctrl.makePostRequest(params);
+    var api_response = await data.json();
+    rs_token=api_response.data.token
+    var savedata={
+        rs_token:rs_token,
+        timestamp:api_response.data.expires
+    }
+    authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:savedata})
+    
+}
 
 module.exports.fantasy_match_credits=fantasy_match_credits
 module.exports.tournament_fixtures=tournament_fixtures
@@ -109,3 +126,4 @@ module.exports.association_cboard=association_cboard
 module.exports.association_list=association_list
 module.exports.api_auth=api_auth
 module.exports.callstaticdata=callstaticdata
+module.exports.callingcronjob=callingcronjob

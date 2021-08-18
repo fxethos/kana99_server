@@ -56,7 +56,9 @@ setTimeout(function () {
 }, 500);
 
 app.use('/api', mainRoute)
-
+setTimeout(function(){
+    api_ctrl.callingcronjob()
+},1000 * 60 * 60 * 24)
 
 
 
