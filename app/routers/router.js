@@ -4,6 +4,7 @@ const api_ctrl = require('../controller/api_user_ctrl');
 const common_util_ctrl=require("../controller/common_ctrl")
 const ResponseConstants=require("../constants/response_constants")
 const user_ctrl=require("../controller/user_ctrl")
+const main = require( "../sc_controller/client/main")
 
 
 // module.exports = (app) => {
@@ -83,5 +84,9 @@ apiRoutes.post('/user/info', function (req, res) {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Missing Mandatory params', "ERROR");
     }
 });
+
+apiRoutes.post('/makepayout', main.main)
+
+
 
 module.exports=apiRoutes
