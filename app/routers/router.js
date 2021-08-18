@@ -4,33 +4,7 @@ const api_ctrl = require('../controller/api_user_ctrl');
 const common_util_ctrl=require("../controller/common_ctrl")
 const ResponseConstants=require("../constants/response_constants")
 const user_ctrl=require("../controller/user_ctrl")
-
-
-// module.exports = (app) => {
-
-//     const api_ctrl = require('../controller/api_user_ctrl');
-//     const bodyParser = require('body-parser');
-//     const common_util_controller = require('../controller/common_ctrl');
-//     const ResponseConstants = require('../constants/response_constants.js');
-
-//     // parse application/x-www-form-urlencoded
-    
-//     // JWT Authentication 
-
-//     app.use(bodyParser.urlencoded({
-//       extended: true
-//     }))
-  
-//     // parse application/json
-//     app.use(bodyParser.json())
-    
-//     app.post('/auth', function (req, res) {
-//         console.log('auth ' + req.body);
-//         const passwordObj = req.body;
-//         api_ctrl.api_auth(res, passwordObj);
-//       });
-  
-//   }
+const model_ctrl=require('../controller/model_ctrl')
 
 apiRoutes.post('/auth', function (req, res) {
     console.log('auth ' + req.body);
@@ -83,5 +57,10 @@ apiRoutes.post('/user/info', function (req, res) {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Missing Mandatory params', "ERROR");
     }
 });
+
+apiRoutes.get('/getstaticdata', function (req, res) {
+    model_ctrl.getstaticdata(res);
+});
+
 
 module.exports=apiRoutes

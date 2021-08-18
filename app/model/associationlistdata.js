@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 
 var transaction = mongoose.Schema({
-    rs_token:{
-        type:String
+    data:{
+        type:[]
     },
     timestamp:{
         type:Number
     }
 });
 
-module.exports = mongoose.model("auth", transaction, "auth");
+module.exports = mongoose.model("associationlistdata", transaction, "associationlistdata");
