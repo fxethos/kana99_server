@@ -1,6 +1,7 @@
 var Express = require('express');
 const app = new Express();
 const mongoose=require('mongoose')
+const solanaWeb3 = require('@solana/web3.js');
 
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
@@ -15,10 +16,38 @@ const config_params=require('./app/constants/params')
 var mainRoute = require('./app/routers/router');
 const api_ctrl=require('./app/controller/api_call_ctrl')
 
+const NETWORK = solanaWeb3.clusterApiUrl('devnet');
+
+let connection =  new solanaWeb3.Connection(NETWORK);
+
+let greetedPubkey = new solanaWeb3.PublicKey("DeH2ULUKz8Hw33fmXU9a5ATf9cabk6cKUf7U9EJjuW5v")
+  
 mongoose.connect('mongodb://127.0.0.1/staticdata', {
     useNewUrlParser: true,
     useUnifiedTopology: true 
 });
+
+const requiredAccounts = new Array();
+const logging = () =>{
+    console.log('started logging')
+    connection.onLogs(greetedPubkey,async function(logs,context){
+      if(logs.err==null){
+        console.log(logs,context)
+        let signature = logs.signature
+        console.log(signature)
+        let payer_pubkey =  await connection.getParsedConfirmedTransaction(signature);
+        let account = await payer_pubkey.transaction.message.instructions
+        console.log(payer_pubkey)
+        let accounts = await account[0].parsed
+            //console.log(accounts.info.source)
+            requiredAccounts.push({ account : accounts.info.source})
+            console.log(requiredAccounts)
+        
+    
+      }
+    })  
+    }
+
 
 app.use(cors())
 app.use(bodyParser.json({ limit: '20mb' }));
@@ -63,9 +92,11 @@ app.use('/api', mainRoute)
 app.listen(config_params.port, (error) => {
     if (!error) {
         api_ctrl.callstaticdata()
+        logging()
         console.log(`Server is running on port: ${config_params.port}!`);
     }
 });
 
-
+module.exports.requiredAccounts
 module.exports = app;
+

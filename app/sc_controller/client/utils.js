@@ -13,7 +13,7 @@ const newAccountWithLamports = async  (
     connection = new solanaWeb3.Connection(NETWORK),
     lamports = 1000000,
   ) =>{
-    console.log('newaccwithlam')
+    //console.log('newAccountWithLamports')
 
     const keypair = solanaWeb3.Keypair.generate();
     const signature = await connection.requestAirdrop(
@@ -24,6 +24,7 @@ const newAccountWithLamports = async  (
     return keypair;
   }
 
+  //gets config file to to determine the cluster and payer
   const getConfig = async  ()=>{
     // Path to Solana CLI config file
     const CONFIG_FILE_PATH = path.resolve(
@@ -42,7 +43,7 @@ const newAccountWithLamports = async  (
  */
 
   const getRpcUrl =  async () =>{
-    console.log('getrpcurl')
+    //console.log('getRpcUrl')
 
     try {
       const config = await getConfig();
@@ -61,7 +62,7 @@ const newAccountWithLamports = async  (
  */
 
    const getPayer = async() => {
-    console.log('getpayer')
+    //console.log('getpayer')
 
     try {
       const config = await getConfig();
@@ -81,7 +82,7 @@ const newAccountWithLamports = async  (
     const createKeypairFromFile = async(
     filePath = "",
   )=>{
-    console.log('createKeypairFromFile')
+    //console.log('createKeypairFromFile')
 
     const secretKeyString = await fs.readFile(filePath, {encoding: 'utf8'});
     const secretKey = Uint8Array.from(JSON.parse(secretKeyString));

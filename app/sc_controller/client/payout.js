@@ -5,17 +5,14 @@ const data = require('./Accountdata.json')
 const path = require('path');
 const fs  = require('mz/fs')
 const solanaWeb3 = require('@solana/web3.js');
-
-
 const borsh = require('borsh')
+const server = require('../../../server')
 const {
   getPayer,
   getRpcUrl,
   newAccountWithLamports,
   createKeypairFromFile,
 } = require ('./utils')
-
-
 
 
 
@@ -26,10 +23,6 @@ const NETWORK = solanaWeb3.clusterApiUrl('devnet');
  */
 let connection =  new solanaWeb3.Connection(NETWORK);
 
-/**
- * Keypair associated to the fees' payer
- */
-let payer = new solanaWeb3.Keypair;
 
 /**
  * Hello world's program id
@@ -113,7 +106,8 @@ const PAYOUT_AMOUNT_SIZE = borsh.serialize(
  */
 
   const establishConnection = async ()=>{
-    console.log('establishconn')
+  
+    //console.log('establishConnection')
     const rpcUrl = await getRpcUrl();
     const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
     const version = await connection.getVersion();
@@ -125,7 +119,9 @@ const PAYOUT_AMOUNT_SIZE = borsh.serialize(
  * Establish an account to pay for everything
  */
 const establishPayer= async () => {
-  console.log('establish player')
+  let payer = await getPayer();
+
+  //console.log('establishPayer')
 
     let fees = 0;
     if (!payer) {
@@ -140,6 +136,7 @@ const establishPayer= async () => {
       try {
         // Get payer from cli config
         payer = await getPayer();
+        
       } catch (err) {
         // Fund a new payer via airdrop
         payer = await newAccountWithLamports(connection, fees);
@@ -170,11 +167,12 @@ const establishPayer= async () => {
  */
  const checkProgram = async ()=>{
   //console.log('chkprogram')
+  let payer = await getPayer();
 
     // Read program id from keypair file
     try {
       const programKeypair = await createKeypairFromFile(PROGRAM_KEYPAIR_PATH);
-      console.log('ikbxks',  programKeypair)
+      //console.log(programKeypair)
 
       programId =  programKeypair.publicKey;
     } catch (err) {
@@ -206,7 +204,8 @@ const establishPayer= async () => {
     GREETING_SEED,
     programId,
   );
-  console.log('greeted account' , greetedPubkey)
+
+  //console.log('greeted account' , greetedPubkey)
 
     // Check if the greeting account has already been created
     const greetedAccount = await connection.getAccountInfo(greetedPubkey);
@@ -239,30 +238,33 @@ const establishPayer= async () => {
  * Say hello
  */
 console.log("Program started")
-const sendPayouts = async  ()=>{
+const sendPayouts = async  (req,res)=>{
+  let payer = await getPayer();
 
   console.log('payouts from', greetedPubkey.toBase58());
-  for(let i=0 ; i<data.payouts.length; i++){
-        let destKey =data.payouts[i].account;
+  for(let i=0 ; i<accounts_array.length; i++){
+        let destKey = accounts_array[0];
+        console.log("destination key" ,destKey)
         const account_signer_destination = new solanaWeb3.PublicKey(destKey);
         let payout_Amount = new PayoutAmount()
         payout_Amount.amount = Number(data.payouts[i].amount)
-        const instruction = new solanaWeb3.TransactionInstruction(
-              {keys: [
-                {pubkey : greetedPubkey,        isSigner : false,  isWritable: true},  
-                {pubkey : account_signer_destination,   isSigner : false, isWritable: true},
-              ],
-              programId,
-              data: Buffer.from(borsh.serialize(PayoutSchema,payout_Amount)),
-          // All instructions are hellos
-        });
-        await solanaWeb3.sendAndConfirmTransaction(
-              connection,
-              new solanaWeb3.Transaction().add(instruction),
-              [payer],
-                  {commitment: 'singleGossip', preflightCommitment: 'singleGossip',}
-        ).then(()=>{console.log('transaction complete'+ data.payouts[i].account + 'and paid ' + data.payouts[i].amount + 'lamports')}).catch((e)=>{console.log(e)});
+        // const instruction = new solanaWeb3.TransactionInstruction(
+        //       {keys: [
+        //         {pubkey : greetedPubkey,        isSigner : false,  isWritable: true},  
+        //         {pubkey : account_signer_destination,   isSigner : false, isWritable: true},
+        //       ],
+        //       programId,
+        //       data: Buffer.from(borsh.serialize(PayoutSchema,payout_Amount)),
+        //   // All instructions are hellos
+        // });
+        // await solanaWeb3.sendAndConfirmTransaction(
+        //       connection,
+        //       new solanaWeb3.Transaction().add(instruction),
+        //       [payer],
+        //           {commitment: 'singleGossip', preflightCommitment: 'singleGossip',}
+        // ).then(()=>{console.log('transaction made to '  +  data.payouts[i].account + 'and paid ' + data.payouts[i].amount  +  'lamports')}).catch((e)=>{console.log(e)});
   }
+  
 }
 
 

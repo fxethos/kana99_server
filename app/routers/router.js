@@ -86,7 +86,8 @@ apiRoutes.post('/user/info', function (req, res) {
     }
 });
 
-apiRoutes.post('/makepayout', main.main)
+apiRoutes.post('/makepayout', main.makepayouts)
+//apiRoutes.post('/logs', main.logData)
 
 apiRoutes.get('/getstaticdata', function (req, res) {
     model_ctrl.getstaticdata(res);
