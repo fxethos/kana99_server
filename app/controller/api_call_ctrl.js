@@ -116,6 +116,7 @@ const callstaticdata=async ()=>{
     if(findmatchlist.length==0){
         tournamentlist=await api_util_ctrl.gettournamentlist()
         await api_util_ctrl.loadmatchlist(tournamentlist,rs_token)
+        console.log("done")
 
     }
 }
@@ -134,7 +135,7 @@ const callingcronjob=async()=>{
         expires:api_response.data.expires
     }
     await api_util_ctrl.updateapitoken(savedata)
-    
+
 }
 
 module.exports.fantasy_match_credits=fantasy_match_credits

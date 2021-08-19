@@ -76,7 +76,7 @@ const savematchlist=async(params)=>{
         status:params.status,
         winner:params.winner,
         messages:params.messages,
-        formats:params.formats,
+        format:params.format,
         sport:params.sport,
         gender: params.gender,
         tournament_key:params.tournament_key,
@@ -119,11 +119,21 @@ const loadmatchlist=async(tournamentlist,rs_token)=>{
     console.log(tournamentlist.length)
     tournamentlist.forEach(element=>{
         params={
-            type:"cricket",
-            eventName:`tournament/${element.key}/fixtures`,
+            page_key:element.key,
             rs_token:rs_token
         }
-        // res= api_call_ctrl.tournament_fixtures(params);
+        api_call_ctrl.tournament_fixtures(params).then((res)=>{
+            res.json().then((matches)=>{
+                console.log("matches",matches.data.matches)
+                matcheslist=matches.data.matches
+                matcheslist.forEach(match=>{
+                    match.tournament_key=match.tournament.key
+                    match.association_key=match.association.key
+                    savematchlist(match)
+                })
+
+            })
+        })
         // console.log(res)
 
     })
