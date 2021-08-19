@@ -7,11 +7,13 @@ const getstaticdata=async (res)=>{
         var authdata=await api_util_ctrl.getapitoken()
         var associationlistdata= await api_util_ctrl.getapiassociationlist()
         var tournamentlistdata=await api_util_ctrl.gettournamentlist()
+        var matcheslist=await api_util_ctrl.getmatchlist()
 
         var result={
             authdata:authdata,
             associationlistdata:associationlistdata,
-            tournamentlistdata:tournamentlistdata
+            tournamentlistdata:tournamentlistdata,
+            matcheslist:matcheslist
         }
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
     }
