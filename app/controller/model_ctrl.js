@@ -1,14 +1,12 @@
 const ResponseConstants=require('../constants/response_constants')
 const common_util_ctrl=require("../controller/common_ctrl")
-const associationlistmodel=require('../model/associationlistdata')
-const authmodel=require('../model/authdata')
-var tournamentlistmodel=require("../model/tournamentlistdata")
+const api_util_ctrl=require("../controller/api_util_ctrl")
 
 const getstaticdata=async (res)=>{
     try{
-        var authdata=await authmodel.findOne()
-        var associationlistdata= await associationlistmodel.findOne()
-        var tournamentlistdata=await tournamentlistmodel.findOne()
+        var authdata=await api_util_ctrl.getapitoken()
+        var associationlistdata= await api_util_ctrl.getapiassociationlist()
+        var tournamentlistdata=await api_util_ctrl.gettournamentlist()
 
         var result={
             authdata:authdata,

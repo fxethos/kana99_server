@@ -2,10 +2,8 @@ const common_util_ctrl=require('../controller/common_ctrl')
 const getparams=require('../constants/params')
 const moment=require('moment')
 
-var authdata=require('../model/authdata')
-var associationlistmodel=require('../model/associationlistdata')
-var tournamentlistmodel=require("../model/tournamentlistdata")
-const { schema } = require('../model/authdata')
+const knex_config=require("../config/knex_config")
+const api_util_ctrl=require("../controller/api_util_ctrl")
 
 var rs_token=''
 
@@ -62,87 +60,80 @@ const callstaticdata=async ()=>{
         api_key:getparams.api_key
     }
     
-    var findauthdata=await authdata.findOne({})
-    if(!findauthdata){
+    var findauthdata=await api_util_ctrl.getapitoken()
+    console.log(findauthdata)
+    if(findauthdata.length==0){
         data=await common_util_ctrl.makePostRequest(params);
         var api_response = await data.json();
         rs_token=api_response.data.token
-        var savedata=new authdata({
+        var savedata={
             rs_token:rs_token,
-            timestamp:api_response.data.expires
-        })
-        savedata.save()
+            expires:api_response.data.expires
+        }
+        await api_util_ctrl.saveapitoken(savedata)
     }else{
-        if(moment.unix(findauthdata.timestamp).toDate()<moment().toDate()){
+        if(moment.unix(findauthdata.expires).toDate()<moment().toDate()){
             data=await common_util_ctrl.makePostRequest(params);
             var api_response = await data.json();
             rs_token=api_response.data.token
             var savedata={
                 rs_token:rs_token,
-                timestamp:api_response.data.expires
+                expires:api_response.data.expires
             }
-            await authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:{
-                rs_token:savedata.rs_token,timestamp:savedata.timestamp
-            }})
+            await api_util_ctrl.updateapitoken(savedata)
         }else{
-            rs_token=findauthdata.rs_token
+            rs_token=findauthdata[0].rs_token
         }
     }
-    findassociationlistdata=await associationlistmodel.findOne()
-    if(!findassociationlistdata){
+    findassociationlistdata=await api_util_ctrl.getapiassociationlist()
+    if(findassociationlistdata.length==0){
         var associationlistdata=await association_list(rs_token)
         associationlistdata = await associationlistdata.json();
-        res=[]
-        res.push(associationlistdata.data)
-        savedata=new associationlistmodel({
-            data:res,
-            timestamp:new Date().getTime()
-        })
-        await savedata.save()
+        var association=associationlistdata.data.associations
+
+        await api_util_ctrl.savemultiassociationlist(association)
+        
     }
-    findtounamentlist=await tournamentlistmodel.findOne()
-    if(!findtounamentlist){
+    findtounamentlist=await api_util_ctrl.gettournamentlist()
+    if(findtounamentlist.length==0){
         senddata={
             rs_token:rs_token,
             page_key:"c__board__bcci__b13f0"
         }
         var associationlistdata=await association_cboard(senddata)
         associationlistdata = await associationlistdata.json();
-        res=[]
-        res.push(associationlistdata.data)
+        await api_util_ctrl.savemultiTounamentlist(associationlistdata.data.tournaments)
         senddata={
             rs_token:rs_token,
             page_key:"c__board__icc__c2ab7ee61"
         }
         var associationlistdata=await association_cboard(senddata)
         associationlistdata = await associationlistdata.json();
-        res.push(associationlistdata.data)
-        console.log(res)
-        savedata=new tournamentlistmodel({
-            data:res,
-            timestamp:new Date().getTime()
-        })
-        await savedata.save()
+        await api_util_ctrl.savemultiTounamentlist(associationlistdata.data.tournaments)
+        console.log("done")
     }
-    
+    var findmatchlist=await api_util_ctrl.getmatchlist()
+    if(findmatchlist.length==0){
+        tournamentlist=await api_util_ctrl.gettournamentlist()
+        await api_util_ctrl.loadmatchlist(tournamentlist,rs_token)
+
+    }
 }
+
 const callingcronjob=async()=>{
     params={
         type:"core",
         eventName:"auth",
         api_key:getparams.api_key
     }
-    var findauthdata=await authdata.findOne({})
     data=await common_util_ctrl.makePostRequest(params);
     var api_response = await data.json();
     rs_token=api_response.data.token
     var savedata={
         rs_token:rs_token,
-        timestamp:api_response.data.expires
+        expires:api_response.data.expires
     }
-    authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:{
-        rs_token:savedata.rs_token,timestamp:savedata.timestamp
-    }})
+    await api_util_ctrl.updateapitoken(savedata)
     
 }
 

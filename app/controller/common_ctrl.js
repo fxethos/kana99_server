@@ -22,6 +22,7 @@ exports.makePostRequest = async (params) => {
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' }
     });
+    console.log("post req ",response)
     return response;
 };
 
@@ -33,5 +34,6 @@ exports.makeGEtRequest = async (params) => {
         method: 'GET',
         headers: { 'rs-token': params.rs_token }
     });
+    console.log("get req ",response)
     return response;
 };

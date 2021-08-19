@@ -1,6 +1,5 @@
 var Express = require('express');
 const app = new Express();
-const mongoose=require('mongoose')
 
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
@@ -18,10 +17,6 @@ const config_params=require('./app/constants/params')
 var mainRoute = require('./app/routers/router');
 const api_ctrl=require('./app/controller/api_call_ctrl')
 
-mongoose.connect('mongodb://127.0.0.1/staticdata', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true 
-});
 
 app.use(cors())
 app.use(bodyParser.json({ limit: '20mb' }));
@@ -71,6 +66,7 @@ const options = {
 var server = https.createServer(options,app)
 
 //app//server
+
 server.listen(config_params.port, (error) => {
     if (!error) {
         api_ctrl.callstaticdata()
