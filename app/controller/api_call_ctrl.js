@@ -5,6 +5,7 @@ const moment=require('moment')
 var authdata=require('../model/authdata')
 var associationlistmodel=require('../model/associationlistdata')
 var tournamentlistmodel=require("../model/tournamentlistdata")
+const { schema } = require('../model/authdata')
 
 var rs_token=''
 
@@ -72,7 +73,6 @@ const callstaticdata=async ()=>{
         })
         savedata.save()
     }else{
-        console.log(findauthdata)
         if(moment.unix(findauthdata.timestamp).toDate()<moment().toDate()){
             data=await common_util_ctrl.makePostRequest(params);
             var api_response = await data.json();
@@ -81,20 +81,19 @@ const callstaticdata=async ()=>{
                 rs_token:rs_token,
                 timestamp:api_response.data.expires
             }
-            authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:savedata})
+            await authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:{
+                rs_token:savedata.rs_token,timestamp:savedata.timestamp
+            }})
         }else{
             rs_token=findauthdata.rs_token
         }
     }
-    console.log(rs_token)
     findassociationlistdata=await associationlistmodel.findOne()
-    console.log(findassociationlistdata)
     if(!findassociationlistdata){
         var associationlistdata=await association_list(rs_token)
         associationlistdata = await associationlistdata.json();
         res=[]
         res.push(associationlistdata.data)
-        console.log(res)
         savedata=new associationlistmodel({
             data:res,
             timestamp:new Date().getTime()
@@ -107,7 +106,7 @@ const callstaticdata=async ()=>{
             rs_token:rs_token,
             page_key:"c__board__bcci__b13f0"
         }
-        var associationlistdata=await association_cboard(rs_token)
+        var associationlistdata=await association_cboard(senddata)
         associationlistdata = await associationlistdata.json();
         res=[]
         res.push(associationlistdata.data)
@@ -115,7 +114,7 @@ const callstaticdata=async ()=>{
             rs_token:rs_token,
             page_key:"c__board__icc__c2ab7ee61"
         }
-        var associationlistdata=await association_cboard(rs_token)
+        var associationlistdata=await association_cboard(senddata)
         associationlistdata = await associationlistdata.json();
         res.push(associationlistdata.data)
         console.log(res)
@@ -141,7 +140,9 @@ const callingcronjob=async()=>{
         rs_token:rs_token,
         timestamp:api_response.data.expires
     }
-    authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:savedata})
+    authdata.findByIdAndUpdate({_id:findauthdata._id},{$set:{
+        rs_token:savedata.rs_token,timestamp:savedata.timestamp
+    }})
     
 }
 
