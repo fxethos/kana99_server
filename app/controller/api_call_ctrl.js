@@ -4,6 +4,7 @@ const moment=require('moment')
 
 var authdata=require('../model/authdata')
 var associationlistmodel=require('../model/associationlistdata')
+var tournamentlistmodel=require("../model/tournamentlistdata")
 
 var rs_token=''
 
@@ -95,6 +96,30 @@ const callstaticdata=async ()=>{
         res.push(associationlistdata.data)
         console.log(res)
         savedata=new associationlistmodel({
+            data:res,
+            timestamp:new Date().getTime()
+        })
+        await savedata.save()
+    }
+    findtounamentlist=await tournamentlistmodel.findOne()
+    if(!findtounamentlist){
+        senddata={
+            rs_token:rs_token,
+            page_key:"c__board__bcci__b13f0"
+        }
+        var associationlistdata=await association_cboard(rs_token)
+        associationlistdata = await associationlistdata.json();
+        res=[]
+        res.push(associationlistdata.data)
+        senddata={
+            rs_token:rs_token,
+            page_key:"c__board__icc__c2ab7ee61"
+        }
+        var associationlistdata=await association_cboard(rs_token)
+        associationlistdata = await associationlistdata.json();
+        res.push(associationlistdata.data)
+        console.log(res)
+        savedata=new tournamentlistmodel({
             data:res,
             timestamp:new Date().getTime()
         })
