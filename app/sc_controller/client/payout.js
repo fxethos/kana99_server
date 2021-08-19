@@ -6,7 +6,10 @@ const path = require('path');
 const fs  = require('mz/fs')
 const solanaWeb3 = require('@solana/web3.js');
 const borsh = require('borsh')
+
 const server = require('../../../server')
+console.log(server.requiredAccounts)
+
 const {
   getPayer,
   getRpcUrl,
@@ -15,6 +18,7 @@ const {
 } = require ('./utils')
 
 
+let destinationKey = new solanaWeb3.PublicKey("DeH2ULUKz8Hw33fmXU9a5ATf9cabk6cKUf7U9EJjuW5v")
 
 const NETWORK = solanaWeb3.clusterApiUrl('devnet');
 
@@ -94,7 +98,6 @@ const PayoutSchema = new Map([
     GreetingSchema,
     new GreetingAccount(),
   ).length;
-  console.log('size' + GREETING_SIZE)
 
 const PAYOUT_AMOUNT_SIZE = borsh.serialize(
     PayoutSchema,
@@ -233,6 +236,27 @@ const establishPayer= async () => {
     }
   }
 
+var requiredAccounts = new Array();
+
+const logging = () =>{
+    console.log('started logging')
+    connection.onLogs(destinationKey,async function(logs,context){
+      if(logs.err==null){
+
+        let signature = logs.signature
+
+        let payer_pubkey =  await connection.getParsedConfirmedTransaction(signature);
+        let account = await payer_pubkey.transaction.message.instructions
+
+        let accounts = await account[0].parsed
+
+        requiredAccounts.push(accounts.info.source)
+            console.log(requiredAccounts)
+        
+    
+      }
+    })  
+    }
 
   /**
  * Say hello
@@ -242,33 +266,33 @@ const sendPayouts = async  (req,res)=>{
   let payer = await getPayer();
 
   console.log('payouts from', greetedPubkey.toBase58());
-  for(let i=0 ; i<accounts_array.length; i++){
-        let destKey = accounts_array[0];
+  for(let i=0 ; i<requiredAccounts.length; i++){
+        let destKey = requiredAccounts[i];
         console.log("destination key" ,destKey)
-        const account_signer_destination = new solanaWeb3.PublicKey(destKey);
+        const account_signer_destination = await new solanaWeb3.PublicKey(destKey);
         let payout_Amount = new PayoutAmount()
-        payout_Amount.amount = Number(data.payouts[i].amount)
-        // const instruction = new solanaWeb3.TransactionInstruction(
-        //       {keys: [
-        //         {pubkey : greetedPubkey,        isSigner : false,  isWritable: true},  
-        //         {pubkey : account_signer_destination,   isSigner : false, isWritable: true},
-        //       ],
-        //       programId,
-        //       data: Buffer.from(borsh.serialize(PayoutSchema,payout_Amount)),
-        //   // All instructions are hellos
-        // });
-        // await solanaWeb3.sendAndConfirmTransaction(
-        //       connection,
-        //       new solanaWeb3.Transaction().add(instruction),
-        //       [payer],
-        //           {commitment: 'singleGossip', preflightCommitment: 'singleGossip',}
-        // ).then(()=>{console.log('transaction made to '  +  data.payouts[i].account + 'and paid ' + data.payouts[i].amount  +  'lamports')}).catch((e)=>{console.log(e)});
+        payout_Amount.amount = 200
+        const instruction = new solanaWeb3.TransactionInstruction(
+              {keys: [
+                {pubkey : greetedPubkey,        isSigner : false,  isWritable: true},  
+                {pubkey : account_signer_destination,   isSigner : false, isWritable: true},
+              ],
+              programId,
+              data: Buffer.from(borsh.serialize(PayoutSchema,payout_Amount)),
+          // All instructions are hellos
+        });
+        await solanaWeb3.sendAndConfirmTransaction(
+              connection,
+              new solanaWeb3.Transaction().add(instruction),
+              [payer],
+                  {commitment: 'singleGossip', preflightCommitment: 'singleGossip',}
+        ).then(()=>{console.log('transaction made to '  +  destKey + 'and paid ' +  payout_Amount.amount  +  'lamports')}).catch((e)=>{console.log(e)});
   }
   
 }
 
 
-module.exports = {sendPayouts,checkProgram,establishPayer,establishConnection}
+module.exports = {sendPayouts,checkProgram,establishPayer,establishConnection,logging}
 
 /**
  * Report the number of times the greeted account has been said hello to
