@@ -62,5 +62,10 @@ apiRoutes.get('/getstaticdata', function (req, res) {
     model_ctrl.getstaticdata(res);
 });
 
+apiRoutes.post('/fantasy_match_credits/db', function (req, res) {
+    console.log('received fantasy_match_credits ' + req.body);
+    const passwordObj = req.body;
+    model_ctrl.getDBfantasy_match_credits(res, passwordObj);
+});
 
 module.exports=apiRoutes

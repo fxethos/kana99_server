@@ -40,6 +40,11 @@ const getapiassociationlist=async()=>{
     return res
 }
 
+const getDBfantasy_match_credits=async(received)=>{
+    res=await knex_config.knex('fantacy_match_credits').select("*").where("match_key","=",received.match_key)
+    return res
+}
+
 const savetournamentlist=async(params)=>{
     console.log(params)
     res=await knex_config.knex('apitournamentdata').insert({
@@ -85,6 +90,21 @@ const savematchlist=async(params)=>{
     })
     return res
 }
+
+const savematchcredit=async(params)=>{
+    res=await knex_config.knex('fantacy_match_credits').insert({
+        match_key: params.match_key,
+        credits:params.credits,
+        players: params.players,
+        teams: params.teams,
+        last_update: params.last_update,
+        match:params.match
+
+    })
+    return res
+}
+
+
 const gettournamentlist=async()=>{
     res=await knex_config.knex('apitournamentdata').select("*")
     return res
@@ -115,6 +135,11 @@ const getmatchlist=async()=>{
     return res
 }
 
+const getmatchcreditlist=async()=>{
+    res=await knex_config.knex('fantacy_match_credits').select("*")
+    return res
+}
+
 const loadmatchlist=async(tournamentlist,rs_token)=>{
     console.log(tournamentlist.length)
     tournamentlist.forEach(element=>{
@@ -139,7 +164,29 @@ const loadmatchlist=async(tournamentlist,rs_token)=>{
     })
 }
 
-
+const loadmatchcredit=async(matchlist,rs_token)=>{
+    console.log(matchlist.length)
+    matchlist.forEach(element=>{
+        params={
+            page_key:element.key,
+            rs_token:rs_token
+        }
+        api_call_ctrl.fantasy_match_credits(params).then((res)=>{
+            res.json().then((matches)=>{
+                console.log("matches",matches.data)
+                matchcredit=matches.data
+                matchcredit.match_key=matchcredit.match.match_meta.key
+                savematchcredit(matchcredit)
+                // matcheslist=matches.data.matches
+                // matcheslist.forEach(match=>{
+                //     match.tournament_key=match.tournament.key
+                //     match.association_key=match.association.key
+                //     savematchcredit(match)
+                // })
+            })
+        })
+    })
+}
 
 function syncLoop(iterations, process, exit) {
     var index = 0,
@@ -187,3 +234,6 @@ module.exports.savemultiTounamentlist=savemultiTounamentlist
 module.exports.loadmatchlist=loadmatchlist
 module.exports.savematchlist=savematchlist
 module.exports.getmatchlist=getmatchlist
+module.exports.getmatchcreditlist=getmatchcreditlist
+module.exports.loadmatchcredit=loadmatchcredit
+module.exports.getDBfantasy_match_credits=getDBfantasy_match_credits

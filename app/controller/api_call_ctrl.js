@@ -110,14 +110,20 @@ const callstaticdata=async ()=>{
         var associationlistdata=await association_cboard(senddata)
         associationlistdata = await associationlistdata.json();
         await api_util_ctrl.savemultiTounamentlist(associationlistdata.data.tournaments)
-        console.log("done")
+        console.log("done 1")
     }
     var findmatchlist=await api_util_ctrl.getmatchlist()
     if(findmatchlist.length==0){
         tournamentlist=await api_util_ctrl.gettournamentlist()
         await api_util_ctrl.loadmatchlist(tournamentlist,rs_token)
-        console.log("done")
+        console.log("done 2")
 
+    }
+    var findmatchcredits= await api_util_ctrl.getmatchcreditlist()
+    if(findmatchcredits.length==0){
+        var findmatchlist=await api_util_ctrl.getmatchlist()
+        await api_util_ctrl.loadmatchcredit(findmatchlist,rs_token)
+        console.log("done 3")
     }
 }
 

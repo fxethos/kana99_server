@@ -22,5 +22,18 @@ const getstaticdata=async (res)=>{
     }
 }
 
+const getDBfantasy_match_credits=async (res,received)=>{
+    try{
+        var result=await api_util_ctrl.getDBfantasy_match_credits(received)
+        console.log(result)
+        
+        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
+    }
+    catch{
+        return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", "ERROR");
+    }
+}
+
 
 module.exports.getstaticdata=getstaticdata
+module.exports.getDBfantasy_match_credits=getDBfantasy_match_credits
