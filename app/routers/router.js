@@ -68,4 +68,16 @@ apiRoutes.post('/fantasy_match_credits/db', function (req, res) {
     model_ctrl.getDBfantasy_match_credits(res, passwordObj);
 });
 
+apiRoutes.post('/postcontest', function (req, res) {
+    console.log('received postcontest ' + req.body);
+    const passwordObj = req.body;
+    model_ctrl.postcontest(res, passwordObj);
+});
+
+apiRoutes.get('/getcontest', function (req, res) {
+    console.log('received get contest ' + req.query);
+    const passwordObj = req.body;
+    model_ctrl.getcontest(res, passwordObj);
+});
+
 module.exports=apiRoutes
