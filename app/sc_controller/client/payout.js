@@ -247,6 +247,7 @@ const checkProgram = async () => {
 var requiredAccounts = new Array();
 
 const logging = async() => {
+
   console.log('started logging')
   connection.onLogs(destinationKey, async function (logs, context) {
     // console.log(logs)
@@ -257,13 +258,25 @@ const logging = async() => {
       let payer_pubkey = await connection.getParsedConfirmedTransaction(signature);
       let account = await payer_pubkey.transaction.message.instructions
       let accounts = await account[0].parsed.info.source
-      if (requiredAccounts.indexOf(accounts) == -1) {
-        requiredAccounts.push(accounts)
-        //reportContest();
-        console.log(requiredAccounts)
+      if (requiredAccounts.some(requiredAccount => requiredAccount.address === accounts)) {
+         console.log("Account is already present")
 
       }else {
-        console.log("Account is already present")
+        console.log("reported greetings")
+        const accountInfo = await connection.getAccountInfo(destinationKey);
+        if (accountInfo === null) {
+            throw 'Error: cannot find the greeted account';
+        }
+        const recievedata = borsh.deserialize(
+
+          ContestSchema,
+          ContestInstruction,
+          accountInfo.data,
+        );
+        console.log(destinationKey.toBase58(),'contestid', recievedata.contestids);
+        requiredAccounts.push({'address':accounts,'contestid':recievedata.contestids})
+        console.log(requiredAccounts)
+
       }
 
 
@@ -271,7 +284,6 @@ const logging = async() => {
 
     }
   })
-  let report = reportContest()
 }
 
 /**
@@ -312,7 +324,7 @@ const sendPayouts = async (req, res) => {
 
 const reportContest = async () => {
   console.log("reported greetings")
-  const accountInfo = await connection.getAccountInfo(greetedPubkey);
+  const accountInfo = await connection.getAccountInfo(destinationKey);
   if (accountInfo === null) {
     throw 'Error: cannot find the greeted account';
   }
@@ -323,7 +335,7 @@ const reportContest = async () => {
     accountInfo.data,
   );
   console.log(
-    greetedPubkey.toBase58(),
+    destinationKey.toBase58(),
     'contestid',
     recievedata
 

@@ -12,6 +12,7 @@ const NETWORK = solanaWeb3.clusterApiUrl('devnet');
   
   const main = async () => {
     console.log("connect to solana account...");
+    
   
     // Establish connection to the cluster
     await payout.establishConnection();
@@ -25,7 +26,6 @@ const NETWORK = solanaWeb3.clusterApiUrl('devnet');
     // send payouts to an account
     await payout.sendPayouts();
   
-   // await payout.reportContest();
   
     console.log('Success');
   }
