@@ -61,6 +61,7 @@ const getcontest=async (res,received)=>{
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "contest data retrieved successfully", result);
     }
     catch(e){
+        console.log(e)
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", "ERROR");
     }
 }

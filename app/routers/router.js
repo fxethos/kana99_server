@@ -75,8 +75,9 @@ apiRoutes.post('/postcontest', function (req, res) {
 });
 
 apiRoutes.get('/getcontest', function (req, res) {
-    console.log('received get contest ' + req.query);
-    const passwordObj = req.body;
+     console.log('received get contest ' + req.query.match_id);
+     //const passwordObj = req.body;
+    const passwordObj = req.query;
     model_ctrl.getcontest(res, passwordObj);
 });
 
