@@ -58,16 +58,16 @@ setTimeout(function(){
 },1000 * 60 * 60 * 24)
 
 
-const options = {
-    key: fs.readFileSync('privkey.pem','utf8'),
-    cert: fs.readFileSync('cert.pem','utf8')
-  };
+// const options = {
+//     key: fs.readFileSync('privkey.pem','utf8'),
+//     cert: fs.readFileSync('cert.pem','utf8')
+//   };
 
-var server = https.createServer(options,app)
+// var server = https.createServer(options,app)
 
 //app//server
 
-server.listen(config_params.port, (error) => {
+app.listen(config_params.port, (error) => {
     if (!error) {
         api_ctrl.callstaticdata()
         console.log(`Server is running on port: ${config_params.port}!`);
