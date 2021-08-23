@@ -1,4 +1,3 @@
-
 //solana-keygen new
 //npm run build:program-rust
 const data = require('./Accountdata.json')
@@ -18,7 +17,7 @@ const {
 } = require('./utils')
 
 
-let destinationKey = new solanaWeb3.PublicKey("DAX5j7gUttmK6c73uqWgeH4UjbtwVQtmCS9VjNv1FEKC")
+let destinationKey = new solanaWeb3.PublicKey("CHdhuY41nUDaiTAiRRwm1qkEbdXMtSJD2XcuxNQdQf21")
 
 const NETWORK = solanaWeb3.clusterApiUrl('devnet');
 
@@ -84,7 +83,7 @@ const PayoutSchema = new Map([
 const ContestInstruction = (function () {
   function ContestInstruction(fields) {
     if (fields === void 0) { fields = undefined; }
-    this.contestids = 0;
+    this.contestids = "";
     this.datatype = 0
     if (fields) {
       this.contestids = fields.contestids;
@@ -96,7 +95,7 @@ const ContestInstruction = (function () {
 }());
 
 const ContestSchema = new Map([
-  [ContestInstruction, { kind: 'struct', fields: [['contestids', 'u64'], ['datatype', 'u64']] }],
+  [ContestInstruction, { kind: 'struct', fields: [['contestids', 'String'], ['datatype', 'u64']] }],
 ]);
 
 /**
@@ -247,12 +246,12 @@ const checkProgram = async () => {
 
 var requiredAccounts = new Array();
 
-const logging = () => {
+const logging = async() => {
   console.log('started logging')
   connection.onLogs(destinationKey, async function (logs, context) {
     // console.log(logs)
     if (logs.err == null) {
-
+      console.log("inside log block")
       let signature = logs.signature
 
       let payer_pubkey = await connection.getParsedConfirmedTransaction(signature);
@@ -260,6 +259,7 @@ const logging = () => {
       let accounts = await account[0].parsed.info.source
       if (requiredAccounts.indexOf(accounts) == -1) {
         requiredAccounts.push(accounts)
+        //reportContest();
         console.log(requiredAccounts)
 
       }else {
@@ -271,6 +271,7 @@ const logging = () => {
 
     }
   })
+  let report = reportContest()
 }
 
 /**
@@ -287,7 +288,7 @@ const sendPayouts = async (req, res) => {
     const account_signer_destination = await new solanaWeb3.PublicKey(destKey);
 
     let payout_Amount = new PayoutAmount()
-    payout_Amount.amount = 200
+    payout_Amount.amount = "200"
     console.log(payout_Amount)
     payout_Amount.datatype = 2
     const instruction = new solanaWeb3.TransactionInstruction(
@@ -297,8 +298,7 @@ const sendPayouts = async (req, res) => {
           { pubkey: account_signer_destination, isSigner: false, isWritable: true },
         ],
         programId,
-        data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
-        // All instructions are hellos
+        //data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
       });
     await solanaWeb3.sendAndConfirmTransaction(
       connection,

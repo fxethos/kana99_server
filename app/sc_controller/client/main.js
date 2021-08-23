@@ -25,7 +25,7 @@ const NETWORK = solanaWeb3.clusterApiUrl('devnet');
     // send payouts to an account
     await payout.sendPayouts();
   
-    //await reportGreetings();
+   // await payout.reportContest();
   
     console.log('Success');
   }
