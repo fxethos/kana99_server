@@ -27,15 +27,15 @@ const NETWORK = solanaWeb3.clusterApiUrl('devnet');
     await payout.sendPayouts();
   
   
-    console.log('Success');
+    //console.log('Success');
   }
   
 
   
   
-const makepayouts = async ()=>{
+const makepayouts = async (req,res)=>{
   await main().then(
-   
+   res.send("payouts made")
   );
 
   }

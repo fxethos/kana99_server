@@ -6,8 +6,6 @@ const fs = require('mz/fs')
 const solanaWeb3 = require('@solana/web3.js');
 const borsh = require('borsh')
 
-const server = require('../../../server')
-console.log(server.requiredAccounts)
 
 const {
   getPayer,
