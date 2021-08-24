@@ -64,7 +64,7 @@ const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'helloworld-keypair.json');
 const PayoutAmount = (function () {
   function PayoutAmount(fields) {
     if (fields === void 0) { fields = undefined; }
-    this.amount = 0;
+    this.amount = "";
     this.datatype = 0;
     if (fields) {
       this.amount = fields.amount;
@@ -76,7 +76,7 @@ const PayoutAmount = (function () {
 
 
 const PayoutSchema = new Map([
-  [PayoutAmount, { kind: 'struct', fields: [['amount', 'u64'], ['datatype', 'u64']] }],
+  [PayoutAmount, { kind: 'struct', fields: [['amount', 'String'], ['datatype', 'u64']] }],
 ])
 
 
@@ -295,14 +295,14 @@ const sendPayouts = async (req, res) => {
 
   console.log('payouts from', greetedPubkey.toBase58());
   for (let i = 0; i < requiredAccounts.length; i++) {
-    let destKey = requiredAccounts[i];
+    let destKey = requiredAccounts[i].address;
     console.log("destination key", destKey)
     const account_signer_destination = await new solanaWeb3.PublicKey(destKey);
 
     let payout_Amount = new PayoutAmount()
-    payout_Amount.amount = "200"
+    payout_Amount.amount = "payout12"
     console.log(payout_Amount)
-    payout_Amount.datatype = 2
+    payout_Amount.datatype = 1
     const instruction = new solanaWeb3.TransactionInstruction(
       {
         keys: [
@@ -310,7 +310,7 @@ const sendPayouts = async (req, res) => {
           { pubkey: account_signer_destination, isSigner: false, isWritable: true },
         ],
         programId,
-        //data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
+        data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
       });
     await solanaWeb3.sendAndConfirmTransaction(
       connection,
