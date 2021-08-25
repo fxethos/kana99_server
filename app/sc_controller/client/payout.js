@@ -15,7 +15,7 @@ const {
 } = require('./utils')
 
 
-let destinationKey = new solanaWeb3.PublicKey("CHdhuY41nUDaiTAiRRwm1qkEbdXMtSJD2XcuxNQdQf21")
+let destinationKey = new solanaWeb3.PublicKey("HJCLMisGueh1BbDZeH6AEBJmvgVg43qe7a9WE1NMFYdR")
 
 const NETWORK = solanaWeb3.clusterApiUrl('devnet');
 
@@ -63,10 +63,10 @@ const PayoutAmount = (function () {
   function PayoutAmount(fields) {
     if (fields === void 0) { fields = undefined; }
     this.amount = "";
-    this.datatype = 0;
+    this.count = 0;
     if (fields) {
       this.amount = fields.amount;
-      this.datatype = fields.datatype;
+      this.count = fields.datatype;
     }
   }
   return PayoutAmount;
@@ -74,7 +74,7 @@ const PayoutAmount = (function () {
 
 
 const PayoutSchema = new Map([
-  [PayoutAmount, { kind: 'struct', fields: [['amount', 'String'], ['datatype', 'u64']] }],
+  [PayoutAmount, { kind: 'struct', fields: [['amount', 'String'], ['count', 'u64']] }],
 ])
 
 
@@ -234,7 +234,7 @@ const checkProgram = async () => {
         seed: GREETING_SEED,
         newAccountPubkey: greetedPubkey,
         lamports,
-        space: 16,
+        space: 20,
         programId,
       }),
     );
@@ -243,12 +243,26 @@ const checkProgram = async () => {
 }
 
 var requiredAccounts = new Array();
+// var requiredAccounts = [
+//   {
+//     address: '8MNBtM2Qq7p5GfNApjhp2n9e9YLJzkJReyS1JFZtJEZW',
+//     contestid: '0.00003'
+//   },
+//   {
+//     address: 'BMRt6EihfG2PiGBK5dtZpyzLVQQ3EziSLfeNGKZCiy3t',
+//     contestid: '12.0944'
+//   },
+//   {
+//     address: 'H6s1ce7kLzxy267hxgWYbRbXJzQTKzhrKrjPYsuV7UWq',
+//     contestid: '12.0944'
+//   }
+// ]
 
 const logging = async() => {
 
   console.log('started logging')
   connection.onLogs(destinationKey, async function (logs, context) {
-    // console.log(logs)
+    //console.log(logs)
     if (logs.err == null) {
       console.log("inside log block")
       let signature = logs.signature
@@ -256,6 +270,7 @@ const logging = async() => {
       let payer_pubkey = await connection.getParsedConfirmedTransaction(signature);
       let account = await payer_pubkey.transaction.message.instructions
       let accounts = await account[0].parsed.info.source
+      console.log(accounts)
       if (requiredAccounts.some(requiredAccount => requiredAccount.address === accounts)) {
          console.log("Account is already present")
 
@@ -276,6 +291,7 @@ const logging = async() => {
         console.log(requiredAccounts)
 
       }
+      
 
 
 
@@ -284,39 +300,48 @@ const logging = async() => {
   })
 }
 
+
+
 /**
 * Say hello
 */
 console.log("Program started")
 const sendPayouts = async (req, res) => {
+ 
+    
+
+
   let payer = await getPayer();
 
   console.log('payouts from', greetedPubkey.toBase58());
+  let source_keys = [{ pubkey: greetedPubkey, isSigner: false, isWritable: true}]
+  let payout_accounts = []
   for (let i = 0; i < requiredAccounts.length; i++) {
-    let destKey = requiredAccounts[i].address;
-    console.log("destination key", destKey)
-    const account_signer_destination = await new solanaWeb3.PublicKey(destKey);
+    payout_accounts.push({"pubkey" : new solanaWeb3.PublicKey(requiredAccounts[i].address),isSigner: false, isWritable: true})
 
-    let payout_Amount = new PayoutAmount()
-    payout_Amount.amount = "payout12"
-    console.log(payout_Amount)
-    payout_Amount.datatype = 1
-    const instruction = new solanaWeb3.TransactionInstruction(
-      {
-        keys: [
-          { pubkey: greetedPubkey, isSigner: false, isWritable: true },
-          { pubkey: account_signer_destination, isSigner: false, isWritable: true },
-        ],
-        programId,
-        data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
-      });
-    await solanaWeb3.sendAndConfirmTransaction(
-      connection,
-      new solanaWeb3.Transaction().add(instruction),
-      [payer],
-      { commitment: 'singleGossip', preflightCommitment: 'singleGossip', }
-    ).then(() => { console.log('transaction made to ' + destKey + 'and paid ' + payout_Amount.amount + 'lamports') }).catch((e) => { console.log(e) });
   }
+  let payout_keys = [...source_keys,...payout_accounts]
+  console.log(payout_keys.length-1)
+  let payout_Amount = new PayoutAmount()
+  payout_Amount.amount = "5.8686"
+  console.log(payout_Amount)
+  payout_Amount.count = payout_keys.length-1
+  const account_signer_destination = await new solanaWeb3.PublicKey("8MNBtM2Qq7p5GfNApjhp2n9e9YLJzkJReyS1JFZtJEZW");
+
+  
+  const instruction = new solanaWeb3.TransactionInstruction(
+    {
+      
+      keys:  payout_keys,
+      programId,
+      data: Buffer.from(borsh.serialize(PayoutSchema, payout_Amount)),
+    });
+  await solanaWeb3.sendAndConfirmTransaction(
+    connection,
+    new solanaWeb3.Transaction().add(instruction),
+    [payer],
+    { commitment: 'singleGossip', preflightCommitment: 'singleGossip', }
+  ) //.then(() => { console.log('transaction made to ' + + 'and paid ' + payout_Amount.amount + 'lamports') }).catch((e) => { console.log(e) });
 
 }
 
@@ -349,3 +374,24 @@ module.exports = { sendPayouts, checkProgram, establishPayer, establishConnectio
 /**
  * Report the number of times the greeted account has been said hello to
  */
+
+
+
+//  let payer = await getPayer();
+//   const destinationPubkey = new solanaWeb3.PublicKey('HJCLMisGueh1BbDZeH6AEBJmvgVg43qe7a9WE1NMFYdR')
+//   let ContestID = new ContestInstruction()
+//   ContestID.contestids = "tradla12"
+//   ContestID.datatype = 0
+//   const instruction = new solanaWeb3.TransactionInstruction(
+//         {
+//           keys: [{pubkey : destinationPubkey, isSigner : false,  isWritable: true},  
+//           ],
+//           programId,
+//           data: Buffer.from(borsh.serialize(ContestSchema,ContestID)),
+//         });
+//       await solanaWeb3.sendAndConfirmTransaction(
+//         connection,
+//         new solanaWeb3.Transaction().add(instruction),
+//         [payer],
+//         { commitment: 'singleGossip', preflightCommitment: 'singleGossip', }
+//       )
