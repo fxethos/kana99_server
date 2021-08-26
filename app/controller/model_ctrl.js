@@ -24,6 +24,7 @@ const getstaticdata=async (res)=>{
 }
 
 const getDBfantasy_match_credits=async (res,received)=>{
+    try{
         var result=await api_util_ctrl.getDBfantasy_match_credits(received)
         const objectArray = Object.entries(result[0]['players']);
         allplayers=[]
@@ -33,6 +34,11 @@ const getDBfantasy_match_credits=async (res,received)=>{
         result[0].players=allplayers
         
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
+    }
+    catch(e){
+        console.log(e)
+        return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", e);
+    }
 }
 
 const postcontest=async (res,received)=>{
