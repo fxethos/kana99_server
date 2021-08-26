@@ -48,8 +48,7 @@ const postcontest=async (res,received)=>{
         })
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "contest added successfully", result);
     }
-    catch(e){
-        console.log(e)
+    catch{
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", e);
     }
 }
@@ -60,8 +59,7 @@ const getcontest=async (res,received)=>{
         result=await knex_config.knex('contests').select("*").where("match_id","=",received.match_id)
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "contest data retrieved successfully", result);
     }
-    catch(e){
-        console.log(e)
+    catch{
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", "ERROR");
     }
 }

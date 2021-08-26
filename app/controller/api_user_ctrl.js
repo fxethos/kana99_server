@@ -20,8 +20,7 @@ const api_auth = async function (res, receivedData) {
         } else {
             return common_util_ctrl.prepareResponse(res, 400, ResponseConstants.ERROR, 'Invalid Credentials ', '');
         }
-    } catch (e) {
-        console.log(e);
+    } catch  {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
@@ -39,8 +38,7 @@ const association_list = async function (res, receivedData) {
         } else {
             return common_util_ctrl.prepareResponse(res, 400, ResponseConstants.ERROR, 'Invalid Credentials ', '');
         }
-    } catch (e) {
-        console.log(e)
+    } catch  {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
@@ -58,8 +56,7 @@ const association_cboard = async function (res, receivedData) {
         } else {
             return common_util_ctrl.prepareResponse(res, 400, ResponseConstants.ERROR, 'Invalid Credentials ', '');
         }
-    } catch (e) {
-        console.log(e);
+    } catch  {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
@@ -77,8 +74,7 @@ const tournament_fixtures = async function (res, receivedData) {
         } else {
             return common_util_ctrl.prepareResponse(res, 400, ResponseConstants.ERROR, 'Invalid Credentials ', '');
         }
-    } catch (e) {
-        console.log(e);
+    } catch  {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
@@ -96,8 +92,7 @@ const fantasy_match_credits = async function (res, receivedData) {
         } else {
             return common_util_ctrl.prepareResponse(res, 400, ResponseConstants.ERROR, 'Invalid Credentials ', '');
         }
-    } catch (e) {
-        console.log(e);
+    } catch  {
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
