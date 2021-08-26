@@ -18,7 +18,8 @@ const signup = async function (res, received) {
         }).catch((err) => {
             return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Something went wrong ', err);
         })
-    } catch  {
+    } catch (e) {
+        console.log(e);
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
@@ -30,7 +31,8 @@ const getuserinfo = async function (res, received) {
         }).catch((err) => {
             return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Something went wrong ', err);
         })
-    } catch {
+    } catch (e) {
+        console.log(e);
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, e.message, e.message);
     }
 }
