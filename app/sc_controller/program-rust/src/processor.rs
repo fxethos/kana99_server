@@ -7,14 +7,13 @@ use solana_program::{
     program_error::ProgramError,
     pubkey::Pubkey,
 };
+use percentage::Percentage;
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct InstructionData {
     pub receiveddata: String,
     pub datatype: u64,
 }
-
-
 
 pub fn process_instruction(
     program_id: &Pubkey,
@@ -28,41 +27,64 @@ pub fn process_instruction(
         ProgramError::InvalidInstructionData
     })?;
 
-    msg!("message {:?}", message);
+    //msg!("message {:?}", message);
 
     if message.datatype == 0 {
         let account = next_account_info(accounts_iter)?;
         msg!("contestid {:?}",message.receiveddata);
         let data = &mut &mut account.data.borrow_mut();
-        msg!("before length {:?}", instruction_data.len());
+        //msg!("before length {:?}", instruction_data.len());
         //msg!("Start save instruction into data");
         data[..instruction_data.len()].copy_from_slice(&instruction_data);
-        msg!("after length {:?}", instruction_data.len());
+        //msg!("after length {:?}", instruction_data.len());
         sol_log_compute_units();
     } else {
         
-        msg!("Recieved request for payouts ");
+        //msg!("Recieved request for payouts ");
         let source_info = next_account_info(accounts_iter)?;
         let amount = message.receiveddata;
-        msg!("array lengtht {:?}",message.datatype);
+        //msg!("array lengtht {:?}",message.datatype);
 
-        for i in 0..message.datatype{
-        let destination_info = next_account_info(accounts_iter)?;
-        msg!("destination account {:?}" ,destination_info);
-        let total_amount = amount.parse::<f32>().unwrap();
-        msg!("{:?}", total_amount);
-        //The account must be owned by the program in order to modify its data
         if source_info.owner != program_id {
-            msg!("Greeted account does not have the correct program id");
+            msg!(" account does not have the correct program id");
             return Err(ProgramError::IncorrectProgramId);
         };
+        for i in 0..message.datatype{
+                let destination_info = next_account_info(accounts_iter)?;
+                //msg!("destination account {:?}" ,destination_info);
+                let total_amount = amount.parse::<f64>().unwrap();
+                msg!("{:?}", total_amount);
+                let rank_1 = Percentage::from_decimal(0.5);
+                let rank_2 = Percentage::from_decimal(0.3);
+                let rank_3 = Percentage::from_decimal(0.2);
+                // msg!("50%   is: {}", rank_1.apply_to(total_amount));
+                // msg!("30%   is: {}", rank_2.apply_to(total_amount));
+                // msg!("20%  is: {}", rank_3.apply_to(total_amount));
+                let payable_amount;
 
-        // Withdraw five lamports from the source
-        **source_info.try_borrow_mut_lamports()? -= 6;
-        // Deposit five lamports into the destination
-        **destination_info.try_borrow_mut_lamports()? += 6;
-        //msg!("paid {:?} ", amount);
+                if i==0 {
+                    payable_amount =  1000000000 as f64 * rank_1.apply_to(total_amount)   ;
+                    msg!("paid : {}", payable_amount as u64);
+                     **source_info.try_borrow_mut_lamports()? -= payable_amount as u64;
+                     **destination_info.try_borrow_mut_lamports()? += payable_amount as u64;
+                }else  if i==1{
+                    payable_amount = 1000000000 as f64 * rank_2.apply_to(total_amount);
+                    msg!("paid {}", payable_amount as u64);
+                    **source_info.try_borrow_mut_lamports()? -= payable_amount as u64;
+                    **destination_info.try_borrow_mut_lamports()? += payable_amount as u64;
+                }else if i==2{
+                    payable_amount = 1000000000 as f64 * rank_3.apply_to(total_amount);
+                    msg!("paid {}", payable_amount as u64);
+                    **source_info.try_borrow_mut_lamports()? -= payable_amount as u64;
+                    **destination_info.try_borrow_mut_lamports()? += payable_amount as u64;
+                }
+       
     };
     };
+
+   
     Ok(())
+
+    
 }
+

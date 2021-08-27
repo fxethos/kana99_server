@@ -243,6 +243,7 @@ const checkProgram = async () => {
 }
 
 var requiredAccounts = new Array();
+
 // var requiredAccounts = [
 //   {
 //     address: '8MNBtM2Qq7p5GfNApjhp2n9e9YLJzkJReyS1JFZtJEZW',
@@ -262,7 +263,7 @@ const logging = async() => {
 
   console.log('started logging')
   connection.onLogs(destinationKey, async function (logs, context) {
-    //console.log(logs)
+    console.log(logs)
     if (logs.err == null) {
       console.log("inside log block")
       let signature = logs.signature
@@ -323,7 +324,7 @@ const sendPayouts = async (req, res) => {
   let payout_keys = [...source_keys,...payout_accounts]
   console.log(payout_keys.length-1)
   let payout_Amount = new PayoutAmount()
-  payout_Amount.amount = "5.8686"
+  payout_Amount.amount = "1.98550"
   console.log(payout_Amount)
   payout_Amount.count = payout_keys.length-1
   const account_signer_destination = await new solanaWeb3.PublicKey("8MNBtM2Qq7p5GfNApjhp2n9e9YLJzkJReyS1JFZtJEZW");
@@ -341,7 +342,7 @@ const sendPayouts = async (req, res) => {
     new solanaWeb3.Transaction().add(instruction),
     [payer],
     { commitment: 'singleGossip', preflightCommitment: 'singleGossip', }
-  ) //.then(() => { console.log('transaction made to ' + + 'and paid ' + payout_Amount.amount + 'lamports') }).catch((e) => { console.log(e) });
+  ) .then(() => { console.log('transaction made to ' + requiredAccounts[i].address ) }).catch((e) => { console.log(e) });
 
 }
 
