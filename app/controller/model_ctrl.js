@@ -2,6 +2,7 @@ const ResponseConstants=require('../constants/response_constants')
 const common_util_ctrl=require("../controller/common_ctrl")
 const api_util_ctrl=require("../controller/api_util_ctrl")
 const knex_config=require("../config/knex_config")
+const { all } = require('../routers/router')
 
 const getstaticdata=async (res)=>{
     try{
@@ -32,6 +33,30 @@ const getDBfantasy_match_credits=async (res,received)=>{
             allplayers.push(value)
         });
         result[0].players=allplayers
+        var all_rounder=[],bowler=[],batsman=[],keeper=[],others=[]
+        allplayers=[]
+        await result[0].players.forEach(element => {
+            var found = result[0].credits.find(element1 =>  element1.player_key ===element.key);
+            element.credit=found.value
+            element.performance=found.performance
+            if(element.seasonal_role==="all_rounder"){
+                all_rounder.push(element)
+            } if(element.seasonal_role==="bowler"){
+                bowler.push(element)
+            } if(element.seasonal_role==="batsman"){
+                batsman.push(element)
+            } if(element.seasonal_role==="keeper"){
+                keeper.push(element)
+            }
+        });
+        
+        result[0].players=[{
+            all_rounder:all_rounder,
+            batsman:batsman,
+            keeper:keeper,
+            bowler:bowler,
+            others:others
+        }]
         
         return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
     }
