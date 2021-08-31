@@ -81,4 +81,23 @@ apiRoutes.get('/getcontest', function (req, res) {
     model_ctrl.getcontest(res, passwordObj);
 });
 
+
+apiRoutes.post('/selectplayer', function (req, res) {
+    console.log('received player info ' + req.body);
+    const resdObj = req.body;
+    user_ctrl.playerinfo(res, resdObj);
+});
+
+apiRoutes.post('/updatePoints', function (req, res) {
+    //console.log('received player info ' + req.body);
+    const resdObj = req.body;
+    user_ctrl.updatePoints(res, resdObj);
+});
+
+apiRoutes.post('/getaddressarray', function (req, res) {
+    //console.log('received player info ' + req.body);
+    const resdObj = req.body;
+    user_ctrl.getaddressarray(res, resdObj);
+});
+
 module.exports=apiRoutes
