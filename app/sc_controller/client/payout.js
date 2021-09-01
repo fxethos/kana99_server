@@ -15,7 +15,7 @@ const {
 } = require('./utils')
 
 
-let destinationKey = new solanaWeb3.PublicKey("HJCLMisGueh1BbDZeH6AEBJmvgVg43qe7a9WE1NMFYdR")
+let destinationKey = new solanaWeb3.PublicKey("ahjxDb93efWWRVV4rJMvoQp3QLkxheHSNUuBc7NTDiU")
 
 const NETWORK = solanaWeb3.clusterApiUrl('devnet');
 
@@ -234,7 +234,7 @@ const checkProgram = async () => {
         seed: GREETING_SEED,
         newAccountPubkey: greetedPubkey,
         lamports,
-        space: 20,
+        space: 44,
         programId,
       }),
     );
@@ -269,8 +269,12 @@ const logging = async() => {
       let signature = logs.signature
 
       let payer_pubkey = await connection.getParsedConfirmedTransaction(signature);
-      let account = await payer_pubkey.transaction.message.instructions
-      let accounts = await account[0].parsed.info.source
+      if( payer_pubkey.transaction == null || payer_pubkey.transaction == undefined){ console.log('null')}else{
+        let account = await payer_pubkey.transaction.message.instructions
+        if(account[0].parsed.info == undefined){
+          console.log('undefined')
+        }else{
+          let accounts = await account[0].parsed.info.source
       console.log(accounts)
       if (requiredAccounts.some(requiredAccount => requiredAccount.address === accounts)) {
          console.log("Account is already present")
@@ -292,6 +296,11 @@ const logging = async() => {
         console.log(requiredAccounts)
 
       }
+
+        }
+        
+      }
+      
       
 
 
@@ -324,7 +333,7 @@ const sendPayouts = async (req, res) => {
   let payout_keys = [...source_keys,...payout_accounts]
   console.log(payout_keys.length-1)
   let payout_Amount = new PayoutAmount()
-  payout_Amount.amount = "1.98550"
+  payout_Amount.amount = "2"
   console.log(payout_Amount)
   payout_Amount.count = payout_keys.length-1
   const account_signer_destination = await new solanaWeb3.PublicKey("8MNBtM2Qq7p5GfNApjhp2n9e9YLJzkJReyS1JFZtJEZW");
@@ -342,7 +351,7 @@ const sendPayouts = async (req, res) => {
     new solanaWeb3.Transaction().add(instruction),
     [payer],
     { commitment: 'singleGossip', preflightCommitment: 'singleGossip', }
-  ) .then(() => { console.log('transaction made to ' + requiredAccounts[i].address ) }).catch((e) => { console.log(e) });
+  ) .then(() => { console.log('payouts made to ' + requiredAccounts[i].address ) }).catch((e) => { console.log(e) });
 
 }
 
