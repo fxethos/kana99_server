@@ -91,7 +91,23 @@ const upcommingmatches=async (res)=>{
                             }
                             if(j==res1.length){
                                 if(up){
-                                    upcommingmatch.push(element)
+                                    upcommingmatch.push({key:element.key,
+                                        name:element.name,
+                                        short_name:element.short_name,
+                                        sub_title:element.sub_title,
+                                        teams:element.teams,
+                                        start_at:element.start_at,
+                                        venue:element.venue,
+                                        tournament:element.tournament,
+                                        association:element.association,
+                                        metric_group:element.metric_group,
+                                        status:element.status,
+                                        winner:element.winner,
+                                        messages:element.messages,
+                                        gender:element.gender,
+                                        sport:element.sport,
+                                        format:element.format                    
+                                    })
                                 }
                                 if(i==result.length){
                                     console.log(i,result.length)
