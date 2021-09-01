@@ -2,7 +2,7 @@ const ResponseConstants=require('../constants/response_constants')
 const common_util_ctrl=require("../controller/common_ctrl")
 const api_util_ctrl=require("../controller/api_util_ctrl")
 const knex_config=require("../config/knex_config")
-const { all } = require('../routers/router')
+const e = require('express')
 
 const getstaticdata=async (res)=>{
     try{
@@ -17,7 +17,7 @@ const getstaticdata=async (res)=>{
             tournamentlistdata:tournamentlistdata,
             matcheslist:matcheslist
         }
-        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
+        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "static data retrievd successfully", result);
     }
     catch{
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", "ERROR");
@@ -58,7 +58,59 @@ const getDBfantasy_match_credits=async (res,received)=>{
             others:others
         }]
         
-        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "static data retrievd successfully", result);
+        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "static data retrievd successfully", result);
+    }
+    catch(e){
+        console.log(e)
+        return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", e);
+    }
+}
+
+const upcommingmatches=async (res)=>{
+    try{
+        var result=await api_util_ctrl.upcommingmatches()
+        var upcommingmatch=[]
+        var i=0
+        if(result.length>0){
+            await result.forEach((element,i)=>{
+                i=i+1
+                res1=((Object.values(element['players'])))
+                var j=0
+                var team='',up=false
+                if(res1.length>0){
+                    res1.forEach((ele,j)=>{
+                        j=j+1
+                        if(j==1){
+                            team=ele.team_key
+                        }
+                        if(j>1){
+                            console.log(j)
+                            console.log(ele.team_key)
+                            if(ele.team_key!=team){
+                                up=true
+                            }
+                            if(j==res1.length){
+                                if(up){
+                                    upcommingmatch.push(element)
+                                }
+                                if(i==result.length){
+                                    console.log(i,result.length)
+                                    return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "upcoming match retrievd successfully", upcommingmatch);
+                                }
+                            }
+                        }
+                    })
+                }else{
+                    if(i==result.length){
+                        console.log(i,result.length)
+                        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "upcoming match retrievd successfully", upcommingmatch);
+                    }
+                }
+            })
+        }else{
+            return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "upcoming match retrievd successfully", upcommingmatch);
+        }
+            
     }
     catch(e){
         console.log(e)
@@ -77,7 +129,7 @@ const postcontest=async (res,received)=>{
             max_contest_size	:received.max_contest_size,
             entry_fee:received.entry_fee
         })
-        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "contest added successfully", result);
+        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "contest added successfully", result);
     }
     catch(e){
         console.log(e)
@@ -89,14 +141,14 @@ const getcontest=async (res,received)=>{
     try{
         console.log(received)
         result=await knex_config.knex('contests').select("*").where("match_id","=",received.match_id)
-        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.ERROR, "contest data retrieved successfully", result);
+        return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, "contest data retrieved successfully", result);
     }
     catch(e){
         console.log(e)
         return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, "Something Went Wrong", "ERROR");
     }
 }
-
+module.exports.upcommingmatches=upcommingmatches
 module.exports.getstaticdata=getstaticdata
 module.exports.getDBfantasy_match_credits=getDBfantasy_match_credits
 module.exports.postcontest=postcontest

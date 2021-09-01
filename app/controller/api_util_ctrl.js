@@ -1,6 +1,7 @@
 const knex_config=require("../config/knex_config")
 const api_call_ctrl=require("../controller/api_call_ctrl")
 const common_util_ctrl=require('../controller/common_ctrl')
+const moment=require("moment")
 
 const saveapitoken=async(params)=>{
     res=await knex_config.knex('apiauthdata').insert({
@@ -135,6 +136,12 @@ const getmatchlist=async()=>{
     return res
 }
 
+const upcommingmatches=async()=>{
+    console.log(moment().unix())
+    res=await knex_config.knex('apimatchdata').select("*").join("fantacy_match_credits as matchcredits", "apimatchdata.key","=","matchcredits.match_key").where("apimatchdata.start_at",">",moment().unix())
+    return res
+}
+
 const getmatchcreditlist=async()=>{
     res=await knex_config.knex('fantacy_match_credits').select("*")
     return res
@@ -237,3 +244,4 @@ module.exports.getmatchlist=getmatchlist
 module.exports.getmatchcreditlist=getmatchcreditlist
 module.exports.loadmatchcredit=loadmatchcredit
 module.exports.getDBfantasy_match_credits=getDBfantasy_match_credits
+module.exports.upcommingmatches=upcommingmatches
