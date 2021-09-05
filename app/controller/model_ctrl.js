@@ -136,7 +136,7 @@ const upcommingmatches=async (res)=>{
 
 const postcontest=async (res,received)=>{
     try{
-        console.log(received)
+        console.log("recieved",received)
         result=await knex_config.knex('contests').insert({
             contest_id: received.contest_id,
             match_id: received.match_id,

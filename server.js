@@ -1,6 +1,8 @@
 var Express = require('express');
 const app = new Express();
-
+const mongoose=require('mongoose')
+const solanaWeb3 = require('@solana/web3.js');
+const payout = require('./app/sc_controller/client/payout')
 var bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -16,6 +18,34 @@ require('dotenv').config();
 const config_params=require('./app/constants/params')
 var mainRoute = require('./app/routers/router');
 const api_ctrl=require('./app/controller/api_call_ctrl')
+
+const NETWORK = solanaWeb3.clusterApiUrl('devnet');
+
+
+// let greetedPubkey = new solanaWeb3.PublicKey("DeH2ULUKz8Hw33fmXU9a5ATf9cabk6cKUf7U9EJjuW5v")
+
+
+// var requiredAccounts = new Array();
+
+// const logging = () =>{
+//     console.log('started logging')
+//     connection.onLogs(greetedPubkey,async function(logs,context){
+//       if(logs.err==null){
+//         console.log(logs,context)
+//         let signature = logs.signature
+//         console.log(signature)
+//         let payer_pubkey =  await connection.getParsedConfirmedTransaction(signature);
+//         let account = await payer_pubkey.transaction.message.instructions
+//         console.log(payer_pubkey)
+//         let accounts = await account[0].parsed
+//             //console.log(accounts.info.source)
+//             requiredAccounts.push({ account : accounts.info.source})
+//             console.log(requiredAccounts)
+        
+    
+//       }
+//     })  
+//     }
 
 
 app.use(cors())
@@ -69,10 +99,12 @@ setTimeout(function(){
 
 app.listen(config_params.port, (error) => {
     if (!error) {
-        api_ctrl.callstaticdata()
+        //api_ctrl.callstaticdata()
+        payout.logging()
         console.log(`Server is running on port: ${config_params.port}!`);
     }
 });
 
 
 module.exports = app;
+

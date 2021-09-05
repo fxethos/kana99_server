@@ -28,7 +28,7 @@ const signup = async function (res, received) {
 
 const getuserinfo = async function (res, received) {
     try {
-        knex_config.knex('users').select('*').where("uuid", "=", received.uuid).then((user) => {
+        knex_config.knex('users').select('*').where("username", "=", received.username).then((user) => {
             return common_util_ctrl.prepareResponse(res, 200, ResponseConstants.SUCCESS, 'user info retrived successfully ', user);
         }).catch((err) => {
             return common_util_ctrl.prepareResponse(res, 500, ResponseConstants.ERROR, 'Something went wrong ', err);
